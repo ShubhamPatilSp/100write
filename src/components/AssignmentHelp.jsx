@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import Reveal from './Reveal';
 
 const AssignmentHelp = () => {
@@ -14,9 +15,9 @@ const AssignmentHelp = () => {
               Your professor might catch it—unless you humanize it first. Use our tool to make it sound real and pass AI checks. Get full marks without stress.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center md:justify-start gap-6">
-              <a href="#" className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-hover w-full sm:w-auto font-body">
+              <Link href="/dashboard" className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-hover w-full sm:w-auto font-body">
                 Start Now - For Free →
-              </a>
+              </Link>
               <div className="flex items-center space-x-2">
                 <div className="flex -space-x-2">
                   {/* Avatar images removed as they were missing from the project */}

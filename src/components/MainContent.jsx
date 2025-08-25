@@ -66,11 +66,13 @@ const MainContent = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {documents.map((doc, i) => (
               <Reveal key={doc._id} className={`reveal reveal-scale ${i % 3 === 1 ? 'reveal-delay-1' : i % 3 === 2 ? 'reveal-delay-2' : ''}`}>
-                <div className="bg-white p-6 rounded-lg border border-gray-200">
-                  <h4 className="font-bold text-lg">{doc.title}</h4>
-                  <p className="text-gray-600 mt-2 text-sm truncate">{doc.content}</p>
-                  <p className="text-xs text-gray-400 mt-4">Last updated: {new Date(doc.updatedAt).toLocaleDateString()}</p>
-                </div>
+                <Link href={`/dashboard/documents/${doc._id}`} className="block h-full">
+                  <div className="bg-white p-6 rounded-lg border border-gray-200 h-full flex flex-col hover:shadow-md transition-shadow duration-200">
+                    <h4 className="font-bold text-lg">{doc.title}</h4>
+                    <p className="text-gray-600 mt-2 text-sm truncate flex-grow">{doc.content}</p>
+                    <p className="text-xs text-gray-400 mt-4">Last updated: {new Date(doc.updatedAt).toLocaleDateString()}</p>
+                  </div>
+                </Link>
               </Reveal>
             ))}
           </div>

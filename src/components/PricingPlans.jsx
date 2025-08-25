@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { PRICING_PLANS } from '@/lib/dodopay';
 
 const CheckIcon = () => (
@@ -13,6 +14,7 @@ const CheckIcon = () => (
 const PricingPlans = () => {
   const [billingInterval, setBillingInterval] = useState('yearly'); // 'monthly' or 'yearly'
   const { data: session } = useSession();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const plans = {
@@ -43,12 +45,12 @@ const PricingPlans = () => {
 
   const handleSelectPlan = async (planName) => {
     if (!session && planName !== 'Free') {
-      window.location.href = '/login';
+      router.push('/login');
       return;
     }
     if (planName === 'Free') {
-        window.location.href = '/signup';
-        return;
+      router.push('/signup');
+      return;
     }
 
     setIsLoading(true);

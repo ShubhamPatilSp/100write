@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import Reveal from './Reveal';
 
 const FeatureCard = ({ featureNumber, title, description, userCount, imageUrl, reverse }) => {
@@ -14,9 +15,9 @@ const FeatureCard = ({ featureNumber, title, description, userCount, imageUrl, r
             {description}
           </p>
           <div className="mt-6">
-            <a href="#" className="text-orange-500 font-semibold hover:text-orange-600 border border-orange-500 rounded-md px-5 py-2 inline-block">
+            <Link href="/dashboard" className="text-orange-500 font-semibold hover:text-orange-600 border border-orange-500 rounded-md px-5 py-2 inline-block">
               Try Now →
-            </a>
+            </Link>
           </div>
           <p className="mt-4 text-sm text-gray-500 flex items-center justify-center md:justify-start">
             <span className="w-2 h-2 bg-primary rounded-full mr-2"></span>
@@ -72,9 +73,9 @@ const Features = () => {
             A powerful set of tools to help you write faster, better, and smarter—so you can spend less time stuck and more time getting things done.
           </p>
           <div className="mt-8">
-            <a href="#" className="bg-primary text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-primary-hover shadow-md font-body">
+            <Link href="/dashboard" className="bg-primary text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-primary-hover shadow-md font-body">
               Start Now - For Free
-            </a>
+            </Link>
           </div>
         </div>
         </Reveal>

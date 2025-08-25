@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import Reveal from './Reveal';
 
 const DetectionCheckers = () => {
@@ -13,9 +14,9 @@ const DetectionCheckers = () => {
           Our humanizer gets your text past even the most advanced AI detection tools on the market.
         </p>
         <div className="mt-8">
-          <a href="#" className="bg-orange-500 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-orange-600 shadow-md">
+          <Link href="/dashboard" className="bg-orange-500 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-orange-600 shadow-md">
             Humanize Text Now
-          </a>
+          </Link>
         </div>
         <div className="mt-12">
           {/* Placeholder for the diagram */}

@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 const AboutPageBanner = () => {
   return (
@@ -7,9 +8,9 @@ const AboutPageBanner = () => {
       <p className="mt-4 max-w-2xl mx-auto text-lg">
         Try 100Write for free and see how our AI-powered tools can transform your writing process. No credit card required.
       </p>
-      <button className="mt-8 bg-white text-orange-500 font-semibold py-3 px-8 rounded-lg hover:bg-gray-100 transition-colors">
+      <Link href="/dashboard" className="mt-8 inline-block bg-white text-orange-500 font-semibold py-3 px-8 rounded-lg hover:bg-gray-100 transition-colors">
         Start for Free
-      </button>
+      </Link>
     </div>
   );
 };

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from 'next/link';
 import Reveal from './Reveal';
 
 const FaqItem = ({ question, answer, isOpen, onClick }) => {
@@ -102,7 +103,7 @@ const Faq = () => {
           <div className="text-center">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Frequently Asked Questions</h2>
             <p className="mt-4 max-w-2xl mx-auto text-lg text-gray-600">
-              Have questions? We've got answers. If you can't find what you're looking for, feel free to contact us.
+              Have questions? We've got answers. If you can't find what you're looking for, feel free to <Link href="/contact" className="text-orange-500 hover:underline">contact us</Link>.
             </p>
           </div>
         </Reveal>

@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import Reveal from './Reveal';
 
 const TestimonialCard = ({ name, handle, title, date, text }) => (
@@ -90,12 +91,12 @@ const Testimonials = () => {
 
           {/* Button */}
           <div className="mt-6">
-            <a
-              href="#"
+            <Link
+              href="/dashboard"
               className="bg-primary text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-primary-hover shadow-md font-body"
             >
               Start Now - For Free →
-            </a>
+            </Link>
           </div>
         </Reveal>
 

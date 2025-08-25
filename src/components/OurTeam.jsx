@@ -12,9 +12,9 @@ const OurTeam = () => {
         <div className="mt-8 p-8 border-2 border-orange-200 rounded-2xl bg-orange-50">
           <h3 className="text-2xl font-bold text-gray-900">We're hiring!</h3>
           <p className="mt-2 text-gray-600">Want to help us build the future of writing? We're looking for talented people to join our team.</p>
-          <button className="mt-6 bg-orange-500 text-white font-semibold py-3 px-8 rounded-lg hover:bg-orange-600 transition-colors">
+          <a href="#" target="_blank" rel="noopener noreferrer" className="mt-6 inline-block bg-orange-500 text-white font-semibold py-3 px-8 rounded-lg hover:bg-orange-600 transition-colors">
             See Open Positions
-          </button>
+          </a>
         </div>
       </div>
     </div>

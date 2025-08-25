@@ -19,7 +19,6 @@ const Navbar = () => {
   };
 
   const navLinks = [
-    { href: '/products', label: 'Products' },
     { href: '/pricing', label: 'Pricing' },
     { href: '/about', label: 'About' },
     { href: '/contact', label: 'Contact Us' },
@@ -61,12 +60,9 @@ const Navbar = () => {
         <div className="flex items-center space-x-4">
           {session ? (
             <div className="flex items-center space-x-4">
-              <button 
-                onClick={() => window.location.href='/dashboard'}
-                className="bg-primary text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-primary-hover font-body"
-              >
+              <Link href="/dashboard" className="bg-primary text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-primary-hover font-body">
                 Dashboard
-              </button>
+              </Link>
               <button 
                 onClick={handleSignOut}
                 className="text-gray-700 bg-white border border-gray-300 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-50"
