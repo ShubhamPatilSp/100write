@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 // DodoPay integration library
 const DODOPAY_BASE_URL = process.env.DODOPAY_BASE_URL || 'https://api.dodopayments.com';
 
@@ -43,7 +45,8 @@ export class DodoPayClient {
       });
 
       if (!response.ok) {
-        throw new Error(`DodoPay API error: ${response.status}`);
+        const errorBody = await response.json().catch(() => ({ message: 'No error body' }));
+        throw new Error(`DodoPay API error in createPaymentSession: ${response.status} - ${errorBody.message || 'Unknown error'}`);
       }
 
       return await response.json();
@@ -64,7 +67,8 @@ export class DodoPayClient {
       });
 
       if (!response.ok) {
-        throw new Error(`DodoPay API error: ${response.status}`);
+        const errorBody = await response.json().catch(() => ({ message: 'No error body' }));
+        throw new Error(`DodoPay API error in retrievePaymentSession: ${response.status} - ${errorBody.message || 'Unknown error'}`);
       }
 
       return await response.json();
@@ -102,7 +106,8 @@ export class DodoPayClient {
       });
 
       if (!response.ok) {
-        throw new Error(`DodoPay API error: ${response.status}`);
+        const errorBody = await response.json().catch(() => ({ message: 'No error body' }));
+        throw new Error(`DodoPay API error in createSubscription: ${response.status} - ${errorBody.message || 'Unknown error'}`);
       }
 
       return await response.json();
@@ -123,7 +128,8 @@ export class DodoPayClient {
       });
 
       if (!response.ok) {
-        throw new Error(`DodoPay API error: ${response.status}`);
+        const errorBody = await response.json().catch(() => ({ message: 'No error body' }));
+        throw new Error(`DodoPay API error in cancelSubscription: ${response.status} - ${errorBody.message || 'Unknown error'}`);
       }
 
       return await response.json();
@@ -144,7 +150,8 @@ export class DodoPayClient {
       });
 
       if (!response.ok) {
-        throw new Error(`DodoPay API error: ${response.status}`);
+        const errorBody = await response.json().catch(() => ({ message: 'No error body' }));
+        throw new Error(`DodoPay API error in getCustomerSubscriptions: ${response.status} - ${errorBody.message || 'Unknown error'}`);
       }
 
       return await response.json();
@@ -156,7 +163,6 @@ export class DodoPayClient {
 
   verifyWebhook(payload, signature) {
     // Implement webhook signature verification
-    const crypto = require('crypto');
     const expectedSignature = crypto
       .createHmac('sha256', this.secretKey)
       .update(payload)
