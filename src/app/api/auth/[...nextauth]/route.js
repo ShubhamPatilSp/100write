@@ -78,8 +78,7 @@ export const authOptions = {
       // Create a session record for all successful sign-ins
       if (user && user.id) {
         try {
-          // headers() is a dynamic API and must be awaited in app route/server context
-          const headersList = await headers();
+          const headersList = headers();
           const userAgent = headersList.get('user-agent') || 'Unknown Device';
           await connectDB();
           await Session.create({

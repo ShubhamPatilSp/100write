@@ -162,10 +162,14 @@ export class DodoPayClient {
       .update(payload)
       .digest('hex');
     
-    return crypto.timingSafeEqual(
-      Buffer.from(signature, 'hex'),
-      Buffer.from(expectedSignature, 'hex')
-    );
+    const signatureBuffer = Buffer.from(signature, 'utf8');
+    const expectedSignatureBuffer = Buffer.from(expectedSignature, 'utf8');
+
+    if (signatureBuffer.length !== expectedSignatureBuffer.length) {
+      return false;
+    }
+
+    return crypto.timingSafeEqual(signatureBuffer, expectedSignatureBuffer);
   }
 }
 
@@ -199,10 +203,11 @@ export const PRICING_PLANS = {
   PRO_MONTHLY: {
     id: 'pro_monthly',
     name: 'Pro Monthly',
-    price: 12,
+    price: 24.99,
     currency: 'USD',
     interval: 'month',
     dodoPayPriceId: process.env.DODOPAY_PRO_MONTHLY_PRICE_ID,
+    paymentLink: process.env.NEXT_PUBLIC_DODOPAY_PRO_MONTHLY_PAYMENT_LINK,
     features: [
       'Unlimited words',
       'Advanced AI detection',
@@ -219,10 +224,11 @@ export const PRICING_PLANS = {
   PRO_YEARLY: {
     id: 'pro_yearly',
     name: 'Pro Yearly',
-    price: 99,
+    price: 299.99,
     currency: 'USD',
     interval: 'year',
     dodoPayPriceId: process.env.DODOPAY_PRO_YEARLY_PRICE_ID,
+    paymentLink: process.env.NEXT_PUBLIC_DODOPAY_PRO_YEARLY_PAYMENT_LINK,
     features: [
       'Unlimited words',
       'Advanced AI detection',

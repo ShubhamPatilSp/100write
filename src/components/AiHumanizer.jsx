@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSubscription } from '@/hooks/useSubscription';
 
 const randomContent = "Fantasy Football is a game played by millions of football fans around the world. It's a game of skill, strategy and luck that's become increasingly popular over the years. In fantasy football, you create a team of real-life NFL players and compete against other teams in your league. Your team earns points based on the performance of your players in real-life NFL games.";
 
@@ -15,28 +16,43 @@ export default function AiHumanizer() {
   const [inputCharCount, setInputCharCount] = useState(0);
   const [outputCharCount, setOutputCharCount] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const fileInputRef = useRef(null);
   const router = useRouter();
+  const { subscription, checkUsage, refreshSubscription } = useSubscription();
 
   useEffect(() => { setInputCharCount(inputText.length); }, [inputText]);
   useEffect(() => { setOutputCharCount(outputText.length); }, [outputText]);
 
   const handleHumanize = async () => {
     if (!inputText) return;
+
+    const usageCheck = checkUsage('humanizations');
+    if (usageCheck.hasReachedLimit) {
+      setErrorMessage(`You have reached your monthly limit of ${usageCheck.limit} humanizations. Please upgrade for unlimited access.`);
+      return;
+    }
+
     setStatus('loading');
+    setErrorMessage('');
     try {
       const res = await fetch('/api/ai/humanize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: inputText, strength }),
       });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Failed to humanize text.');
+      }
       const data = await res.json();
       setOutputText(data.output || '');
       setStatus('result');
-    } catch {
+      refreshSubscription();
+    } catch (error) {
       setOutputText('');
       setStatus('idle');
-      alert('Failed to humanize.');
+      setErrorMessage(error.message);
     }
   };
 
@@ -97,6 +113,11 @@ export default function AiHumanizer() {
           <div className="relative mt-2 flex-grow">
             <textarea className="w-full h-full min-h-[300px] md:min-h-[460px] p-4 border-t border-gray-200 rounded-b-xl resize-none focus:outline-none focus:ring-0" value={inputText} onChange={(e) => setInputText(e.target.value)} readOnly={isLoading} maxLength={5000} />
           </div>
+          {errorMessage && (
+            <div className="px-4 py-2 text-sm text-red-700 bg-red-50 border-t border-red-200">
+              {errorMessage}
+            </div>
+          )}
 
           <div className="flex flex-col sm:flex-row items-center justify-between px-4 py-3 gap-3"><p className="text-xs text-gray-500 font-body">{inputCharCount}/5000 Characters</p><div className="flex items-center flex-wrap justify-end gap-2"><Link href="/dashboard/ai-detector" className="px-4 py-2 rounded-full border text-sm font-semibold text-gray-700 hover:bg-gray-50 font-body">Detect AI Content</Link><button onClick={status === 'result' ? handleReset : handleHumanize} disabled={isLoading || !inputText} className="px-5 py-2 rounded-full bg-primary text-white text-sm font-semibold hover:bg-primary-hover disabled:bg-gray-400 font-body">{status === 'result' ? 'Humanize Text ++' : 'Humanize Text ++'}</button></div></div>
         </div>

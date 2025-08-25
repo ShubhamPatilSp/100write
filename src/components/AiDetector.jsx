@@ -1,6 +1,8 @@
 'use client';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import { useSubscription } from '@/hooks/useSubscription';
 
 // Mock data for random content
 const randomContent = "Fantasy Football is a game played by millions of football fans around the world. It's a game of skill, strategy and luck that's become increasingly popular over the years. In fantasy football, you create a team of real-life NFL players and compete against other teams in your league. Your team earns points based on the performance of your players in real-life NFL games.";
@@ -16,6 +18,7 @@ const AiDetector = () => {
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
   const isLoading = status === 'loading';
+  const { subscription, checkUsage, refreshSubscription } = useSubscription();
 
   const prevTextRef = useRef(text);
 
@@ -36,6 +39,12 @@ const AiDetector = () => {
 
   const handleDetect = useCallback(async () => {
     const trimmedText = text.trim();
+    const usageCheck = checkUsage('detections');
+    if (usageCheck.hasReachedLimit) {
+      setErrorMessage(`You have reached your monthly limit of ${usageCheck.limit} AI detections. Please upgrade for unlimited access.`);
+      return;
+    }
+
     if (!trimmedText) {
       alert('Please enter some text to analyze');
       return;
@@ -73,6 +82,7 @@ const AiDetector = () => {
       setThirdPartyScores(third);
       setKeyFindings(findings);
       setStatus('result');
+      refreshSubscription(); // Refresh subscription to get updated usage
     } catch (error) {
       console.error('Detection error:', error);
       setErrorMessage(error.message || 'Detection failed — please try again.');

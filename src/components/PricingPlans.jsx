@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useSession } from 'next-auth/react';
+import { PRICING_PLANS } from '@/lib/dodopay';
 
 const CheckIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-orange-400" viewBox="0 0 20 20" fill="currentColor">
@@ -16,35 +17,24 @@ const PricingPlans = () => {
 
   const plans = {
     free: {
+      ...PRICING_PLANS.FREE,
       name: 'Free',
       description: 'The flexible option for individuals who want to try our AI tools.',
       price: { monthly: 0, yearly: 0 },
-      features: [
-        '550 AI Humanization words',
-        '1 Content Generation Credits',
-        'Limited usage of AI tools',
-        'Upgrade early any time during trial',
-        'Basic AI Humanization',
-      ],
       buttonText: 'Start Free Trial',
       isPopular: false,
     },
-    unlimited: {
-      name: 'Unlimited',
+    pro: {
+      ...PRICING_PLANS.PRO_MONTHLY, // Base features from monthly
+      name: 'Pro',
       description: 'The all-in-one plan for high-achievers aiming to supercharge their writing skills.',
-      price: { monthly: 48, yearly: 24 },
+      price: {
+        monthly: PRICING_PLANS.PRO_MONTHLY.price,
+        yearly: (PRICING_PLANS.PRO_YEARLY.price / 12).toFixed(2), // Assuming yearly price is for 12 months
+      },
       features: [
-        'Advanced Turnitin Bypass Engine',
-        '3000 words per request',
-        'Unlimited AI Humanizations',
-        'Unlimited AI Rewriting',
-        'Unlimited AI Content Detection Capabilities',
-        'Error-free rewriting',
-        'Human-like results',
-        'Unlimited grammar checks',
-        'Undetectable results',
-        'Fast mode',
-        'Priority support',
+        ...PRICING_PLANS.PRO_MONTHLY.features,
+        '2 months free',
       ],
       buttonText: 'Upgrade Plan',
       isPopular: true,
@@ -62,27 +52,20 @@ const PricingPlans = () => {
     }
 
     setIsLoading(true);
-    const planId = billingInterval === 'yearly' ? 'pro_yearly' : 'pro_monthly';
+    const planId = billingInterval === 'yearly' ? PRICING_PLANS.PRO_YEARLY.id : PRICING_PLANS.PRO_MONTHLY.id;
 
-    try {
-      const response = await fetch('/api/payments/create-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planId }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create payment session');
+    const handleCheckout = (planId) => {
+      setIsLoading(true);
+      const plan = Object.values(PRICING_PLANS).find(p => p.id === planId);
+      if (plan && plan.paymentLink) {
+        window.location.href = plan.paymentLink;
+      } else {
+        alert('Payment link for this plan is not available.');
+        setIsLoading(false);
       }
+    };
 
-      const { checkoutUrl } = await response.json();
-      window.location.href = checkoutUrl;
-    } catch (error) {
-      console.error('Error creating payment session:', error);
-      alert('Failed to start checkout process. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
+    handleCheckout(planId);
   };
 
   return (

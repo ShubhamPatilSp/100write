@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useSubscription } from '@/hooks/useSubscription';
 
 const AiGenerator = () => {
   const [step, setStep] = useState(1);
@@ -27,6 +28,8 @@ const AiGenerator = () => {
   const [generatedOutline, setGeneratedOutline] = useState(null);
   const [currentDraft, setCurrentDraft] = useState(1);
   const [totalDrafts, setTotalDrafts] = useState(5);
+  const [errorMessage, setErrorMessage] = useState('');
+  const { subscription, checkUsage, refreshSubscription } = useSubscription();
 
   const handleTopicToggle = (topic) => {
     setSelectedTopics(prev => 
@@ -55,6 +58,16 @@ const AiGenerator = () => {
 
   const handleProceedToStep3 = async (e) => {
     e.preventDefault();
+
+    const usageCheck = checkUsage('words', wordCount);
+    if (usageCheck.hasReachedLimit) {
+      const remaining = usageCheck.limit - usageCheck.used;
+      setErrorMessage(`You are requesting ${wordCount} words, but you only have ${remaining > 0 ? remaining : 0} words left. Please upgrade for unlimited words.`);
+      setStep(1); // Go back to step 1 to show error
+      return;
+    }
+
+    setErrorMessage('');
     try {
       const res = await fetch('/api/ai/generate-outline', {
         method: 'POST',
@@ -67,11 +80,17 @@ const AiGenerator = () => {
           topics: selectedTopics.map(t => t.text),
         }),
       });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Failed to generate outline');
+      }
       const data = await res.json();
       setGeneratedOutline(data.outline || []);
       setStep(3);
-    } catch {
-      alert('Failed to generate outline');
+      refreshSubscription();
+    } catch (error) {
+      setErrorMessage(error.message);
+      setStep(1); // Go back to step 1 to show error
     }
   };
 
@@ -222,6 +241,11 @@ const AiGenerator = () => {
           )}
         </div>
 
+        {errorMessage && (
+          <div className="mt-4 text-center p-3 text-sm text-red-700 bg-red-50 rounded-lg border border-red-200">
+            {errorMessage}
+          </div>
+        )}
         <div className="text-center pt-2">
           <button type="submit" className="bg-orange-500 text-white font-bold py-3 px-8 rounded-full hover:bg-orange-600 text-lg">Generate Outline →</button>
         </div>
