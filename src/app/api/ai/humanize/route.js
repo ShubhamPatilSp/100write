@@ -43,6 +43,10 @@ Return ONLY the rewritten text, with no additional commentary or formatting.`;
     return NextResponse.json({ output });
   } catch (e) {
     console.error('AI humanize error:', e);
+    // Check for rate limit error (status code 429)
+    if (e.message && e.message.includes('429')) {
+      return NextResponse.json({ error: 'You have exceeded your daily limit for this feature. Please try again tomorrow or upgrade your plan for higher limits.' }, { status: 429 });
+    }
     return NextResponse.json({ error: 'Failed to humanize text', details: e.message }, { status: 500 });
   }
 }

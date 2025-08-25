@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 
 // DodoPay integration library
-const DODOPAY_BASE_URL = process.env.DODOPAY_BASE_URL || 'https://api.dodopayments.com';
+const DODOPAY_BASE_URL = 'https://api.dodopayments.com';
 
 export class DodoPayClient {
   constructor(apiKey, secretKey) {

@@ -297,10 +297,15 @@ const AiDetector = () => {
               </button>
             </div>
             {errorMessage && (
-              <div className="px-4 pb-3">
-                <div className="text-sm text-rose-600">{errorMessage}</div>
-              </div>
-            )}
+            <div className="px-4 py-2 text-sm text-red-700 bg-red-50 border-t border-red-200 flex items-center justify-between">
+              <span>{errorMessage}</span>
+              {errorMessage.includes('upgrade your plan') && (
+                <Link href="/pricing" className="font-bold underline ml-2 whitespace-nowrap px-3 py-1 rounded-md border border-red-300 hover:bg-red-100">
+                  Upgrade Plan
+                </Link>
+              )}
+            </div>
+          )}
           </div>
         </div>
       </div>

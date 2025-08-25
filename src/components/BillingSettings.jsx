@@ -53,7 +53,7 @@ const BillingHistoryTable = ({ history }) => {
 
 const FreePlanView = ({ subscription, handleCreateSession, isProcessing }) => {
   const wordsUsed = subscription?.usage?.words || 0;
-  const wordsLimit = subscription?.limits?.words || 300;
+  const wordsLimit = subscription?.limits?.words ?? 300;
 
   return (
     <div className="space-y-6">
@@ -185,6 +185,9 @@ export default function BillingSettings() {
 
   useEffect(() => {
     fetchBillingData();
+    const intervalId = setInterval(fetchBillingData, 5000); // Poll every 5 seconds
+
+    return () => clearInterval(intervalId); // Cleanup on component unmount
   }, [fetchBillingData]);
 
   const handleConfirmCancel = async () => {

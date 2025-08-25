@@ -71,6 +71,22 @@ SubscriptionSchema.methods.isActive = function() {
   return this.status === 'active' && (!this.currentPeriodEnd || this.currentPeriodEnd > new Date());
 };
 
+// Method to check if user can use a certain amount of words
+SubscriptionSchema.methods.canUseWords = function(words) {
+  const { PRICING_PLANS } = require('../lib/dodopay');
+  const plan = Object.values(PRICING_PLANS).find(p => p.id === this.planId);
+  
+  if (!plan) {
+    return false; // No plan found
+  }
+
+  if (plan.limits.words === -1) {
+    return true; // Unlimited
+  }
+  
+  return (this.usage.words + words) <= plan.limits.words;
+};
+
 // Method to check if user has reached usage limits
 SubscriptionSchema.methods.hasReachedLimit = function(type) {
   const { PRICING_PLANS } = require('../lib/dodopay');
@@ -83,9 +99,11 @@ SubscriptionSchema.methods.hasReachedLimit = function(type) {
   return this.usage[type] >= plan.limits[type];
 };
 
-// Method to increment usage
-SubscriptionSchema.methods.incrementUsage = function(type, amount = 1) {
-  this.usage[type] += amount;
+// Method to track usage
+SubscriptionSchema.methods.trackUsage = function(type, amount = 1) {
+  if (this.usage[type] !== undefined) {
+    this.usage[type] += amount;
+  }
   return this.save();
 };
 

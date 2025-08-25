@@ -114,8 +114,13 @@ export default function AiHumanizer() {
             <textarea className="w-full h-full min-h-[300px] md:min-h-[460px] p-4 border-t border-gray-200 rounded-b-xl resize-none focus:outline-none focus:ring-0" value={inputText} onChange={(e) => setInputText(e.target.value)} readOnly={isLoading} maxLength={5000} />
           </div>
           {errorMessage && (
-            <div className="px-4 py-2 text-sm text-red-700 bg-red-50 border-t border-red-200">
-              {errorMessage}
+            <div className="px-4 py-2 text-sm text-red-700 bg-red-50 border-t border-red-200 flex items-center justify-between">
+              <span>{errorMessage}</span>
+              {errorMessage.includes('upgrade your plan') && (
+                <Link href="/pricing" className="font-bold underline ml-2 whitespace-nowrap px-3 py-1 rounded-md border border-red-300 hover:bg-red-100">
+                  Upgrade Plan
+                </Link>
+              )}
             </div>
           )}
 

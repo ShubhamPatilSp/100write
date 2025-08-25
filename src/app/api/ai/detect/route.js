@@ -96,11 +96,11 @@ Only return valid JSON, no other text.`;
       keyFindings: response.keyFindings,
       thirdParty 
     });
-  } catch (e) {
-    console.error('AI detection error:', e);
-    if (e.message && e.message.includes('quota')) {
-        return NextResponse.json({ error: 'Free limit reached. Please upgrade for unlimited access.' }, { status: 429 });
+  } catch (error) {
+    console.error('AI detection error:', error);
+    if (error.status === 429) {
+      return NextResponse.json({ error: 'You have exceeded your daily limit for this feature. Please try again tomorrow or upgrade your plan for higher limits.' }, { status: 429 });
     }
-    return NextResponse.json({ error: 'Failed to detect', details: e.message }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to detect', details: error.message }, { status: 500 });
   }
 }
