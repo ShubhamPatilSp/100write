@@ -161,6 +161,28 @@ export class DodoPayClient {
     }
   }
 
+  async getCustomerBillingHistory(customerEmail) {
+    try {
+      const response = await fetch(`${this.baseURL}/v1/invoices?customer_email=${encodeURIComponent(customerEmail)}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.json().catch(() => ({ message: 'No error body' }));
+        throw new Error(`DodoPay API error in getCustomerBillingHistory: ${response.status} - ${errorBody.message || 'Unknown error'}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('DodoPay getCustomerBillingHistory error:', error);
+      throw error;
+    }
+  }
+
   verifyWebhook(payload, signature) {
     // Implement webhook signature verification
     const expectedSignature = crypto

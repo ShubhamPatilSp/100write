@@ -19,6 +19,18 @@ const SessionSchema = new mongoose.Schema({
     type: String,
     default: 'Unknown Location',
   },
+  country: {
+    type: String,
+    default: 'Unknown Country',
+  },
+  countryCode: {
+    type: String,
+    default: 'XX',
+  },
+  city: {
+    type: String,
+    default: 'Unknown City',
+  },
   expires: {
     type: Date,
     required: true,

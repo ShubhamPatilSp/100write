@@ -22,6 +22,10 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please provide a password.'],
   },
+  provider: {
+    type: String,
+    default: 'credentials',
+  },
   dodoPayCustomerId: {
     type: String,
     sparse: true,

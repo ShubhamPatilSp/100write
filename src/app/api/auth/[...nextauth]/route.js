@@ -51,41 +51,73 @@ export const authOptions = {
     signIn: '/login',
   },
   callbacks: {
-        async signIn({ user, account }) {
-      if (account?.provider === 'google' && user?.email) {
-        try {
-          await connectDB();
-          let dbUser = await User.findOne({ email: user.email });
+    async signIn({ user, account }) {
+      try {
+        await connectDB();
+        let dbUser = await User.findOne({ email: user.email });
 
+        if (account?.provider === 'google') {
           if (!dbUser) {
             const placeholderPassword = await bcrypt.hash(randomUUID(), 10);
             dbUser = await User.create({
               name: user.name || user.email,
               email: user.email,
-              password: placeholderPassword, // Google users won't use this
+              password: placeholderPassword,
+              provider: 'google',
             });
+          } else if (dbUser.provider !== 'google') {
+            dbUser.provider = 'google';
+            await dbUser.save();
           }
-
-          // IMPORTANT: Replace the provider's user ID with your database's user ID
-          user.id = dbUser._id.toString();
-
-        } catch (e) {
-          console.error('Error during Google sign-in process:', e);
-          return false; // Prevent sign-in if there's a DB error
         }
+
+        if (!dbUser) return false;
+
+        user.id = dbUser._id.toString();
+        user.provider = dbUser.provider; // Pass provider to JWT callback
+
+      } catch (e) {
+        console.error('Error during sign-in process:', e);
+        return false;
       }
 
       // Create a session record for all successful sign-ins
       if (user && user.id) {
         try {
           const headersList = headers();
-          const userAgent = headersList.get('user-agent') || 'Unknown Device';
+            const userAgent = headersList.get('user-agent') || 'Unknown Device';
+          const ip = headersList.get('x-forwarded-for') || '127.0.0.1';
+          const newSessionToken = randomUUID();
+          user.sessionToken = newSessionToken; // Pass session token to JWT callback
+
+          let locationData = {
+            location: 'Unknown Location',
+            country: 'Unknown Country',
+            countryCode: 'XX',
+            city: 'Unknown City',
+          };
+
+          try {
+            const response = await fetch(`https://ipapi.co/${ip}/json/`);
+            if (response.ok) {
+              const data = await response.json();
+              locationData = {
+                location: `${data.city}, ${data.region}`,
+                country: data.country_name,
+                countryCode: data.country_code,
+                city: data.city,
+              };
+            }
+          } catch (e) {
+            console.error('Failed to fetch location from IP API', e);
+          }
+
           await connectDB();
           await Session.create({
-            userId: user.id, // Now this is the MongoDB _id
-            sessionToken: randomUUID(),
+            userId: user.id,
+            sessionToken: newSessionToken,
             device: userAgent,
-            location: 'Unknown Location',
+            ...locationData,
             expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
           });
         } catch (e) {
@@ -97,31 +129,21 @@ export const authOptions = {
     },
     async jwt({ token, user }) {
       if (user) {
-        // On initial sign-in, the 'user' object from signIn is available
         token.id = user.id;
         token.name = user.name;
         token.email = user.email;
+        token.provider = user.provider;
+        token.sessionToken = user.sessionToken;
       }
       return token;
     },
-        async session({ session, token }) {
-      if (session?.user && token?.id) {
-        session.user.id = token.id;
-        try {
-          await connectDB();
-          const user = await User.findById(token.id).select('provider');
-          if (user) {
-            session.user.provider = user.provider;
-          }
-        } catch (e) {
-          console.error('Failed to fetch user provider status', e);
-        }
-      }
-
+    async session({ session, token }) {
       if (session?.user && token) {
         session.user.id = token.id;
         session.user.email = token.email || session.user.email;
         session.user.name = token.name || session.user.name;
+        session.user.provider = token.provider;
+        session.user.sessionToken = token.sessionToken;
       }
       return session;
     },

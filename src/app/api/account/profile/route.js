@@ -62,6 +62,16 @@ export async function PATCH(req) {
       return NextResponse.json({ message: 'User not found' }, { status: 404 });
     }
 
+    const newSession = {
+      ...session,
+      user: {
+        ...session.user,
+        name: updatedUser.name,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+      },
+    };
+
     return NextResponse.json(updatedUser);
   } catch (error) {
     console.error('Error updating user profile:', error);

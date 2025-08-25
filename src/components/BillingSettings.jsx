@@ -8,59 +8,57 @@ import { FaStar } from 'react-icons/fa';
 import ProgressBar from './ProgressBar';
 
 const SectionTitle = ({ children }) => (
-  <h3 className="text-lg font-semibold text-gray-800 mb-4">{children}</h3>
+  <h3 className="text-xs font-bold tracking-wider text-gray-500 mb-2 uppercase">{children}</h3>
 );
 
-const BillingHistoryTable = ({ history }) => (
-  <div className="border border-gray-200 rounded-lg overflow-x-auto">
-    <table className="min-w-full bg-white">
-      <thead>
-        <tr className="bg-gray-50">
-          <th className="py-3 px-6 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Invoice</th>
-          <th className="py-3 px-6 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount</th>
-          <th className="py-3 px-6 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
-          <th className="py-3 px-6 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-        </tr>
-      </thead>
-      <tbody className="divide-y divide-gray-200">
+const BillingHistoryTable = ({ history }) => {
+  const formatCurrency = (amount, currency) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency.toUpperCase(),
+    }).format(amount / 100);
+  };
+
+  return (
+    <div className="border border-gray-200 rounded-lg">
+      <div className="hidden sm:grid grid-cols-12 px-4 py-2 bg-gray-50 text-xs font-semibold text-gray-500 uppercase">
+        <div className="col-span-3">Invoice</div>
+        <div className="col-span-3">Amount</div>
+        <div className="col-span-3">Date</div>
+        <div className="col-span-3">Status</div>
+      </div>
+      <div className="divide-y divide-gray-200">
         {history && history.length > 0 ? (
           history.map((item) => (
-            <tr key={item.id}>
-              <td className="px-6 py-4 text-sm font-medium text-gray-800">{item.invoice}</td>
-              <td className="px-6 py-4 text-sm text-gray-600">{item.amount}</td>
-              <td className="px-6 py-4 text-sm text-gray-600">{item.date}</td>
-              <td className="px-6 py-4 text-sm">
-                <span className="px-2 py-1 text-xs font-semibold text-green-700 bg-green-100 rounded-full">{item.status}</span>
-              </td>
-            </tr>
+            <div key={item.id} className="grid grid-cols-1 sm:grid-cols-12 items-center px-4 py-3">
+              <div className="sm:col-span-3 text-sm font-medium text-gray-800 mb-1 sm:mb-0">{item.invoice_number}</div>
+              <div className="sm:col-span-3 text-sm text-gray-600 mb-1 sm:mb-0">{formatCurrency(item.amount, item.currency)}</div>
+              <div className="sm:col-span-3 text-sm text-gray-600 mb-1 sm:mb-0">{new Date(item.created_at).toLocaleDateString('en-US', { day: '2-digit', month: 'long', year: 'numeric' })}</div>
+              <div className="sm:col-span-3">
+                <span className={`px-2 py-1 text-xs font-semibold rounded-full uppercase ${item.status === 'paid' ? 'text-green-700 bg-green-100' : 'text-yellow-700 bg-yellow-100'}`}>{item.status}</span>
+              </div>
+            </div>
           ))
         ) : (
-          <tr>
-            <td colSpan="4" className="text-center py-10 text-gray-500">
-              <div className="flex justify-between items-center px-6">
-                <span>Showing 0 to 0 of 0 results</span>
-                <div>
-                  <button className="px-4 py-2 border rounded-md text-sm font-semibold hover:bg-gray-100 disabled:opacity-50 mr-2" disabled>Previous</button>
-                  <button className="px-4 py-2 border rounded-md text-sm font-semibold hover:bg-gray-100 disabled:opacity-50" disabled>Next</button>
-                </div>
-              </div>
-            </td>
-          </tr>
+          <div className="text-center py-6 px-4 text-sm text-gray-500">Showing 0 to 0 of 0 results</div>
         )}
-      </tbody>
-    </table>
-  </div>
-);
+      </div>
+      <div className="flex justify-end items-center px-4 py-3 bg-gray-50 rounded-b-lg">
+        <button className="px-3 py-1.5 border rounded-md text-sm font-semibold hover:bg-gray-100 disabled:opacity-50 mr-2" disabled>Previous</button>
+        <button className="px-3 py-1.5 border rounded-md text-sm font-semibold hover:bg-gray-100 disabled:opacity-50" disabled>Next</button>
+      </div>
+    </div>
+  );
+};
 
 const FreePlanView = ({ subscription, handleCreateSession, isProcessing }) => {
   const wordsUsed = subscription?.usage?.words || 0;
   const wordsLimit = subscription?.limits?.words || 300;
 
   return (
-    <div className="space-y-8">
-      {/* Current Subscription Banner */}
-      <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-        <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-white rounded-full border-4 border-orange-100">
+    <div className="space-y-6">
+      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-white rounded-full border-4 border-gray-100">
           <FiX className="text-orange-500" size={24} />
         </div>
         <div className="flex-grow">
@@ -71,7 +69,7 @@ const FreePlanView = ({ subscription, handleCreateSession, isProcessing }) => {
           <button 
             onClick={() => handleCreateSession('pro_monthly')}
             disabled={isProcessing}
-            className="bg-orange-500 text-white font-semibold px-5 py-2 rounded-md hover:bg-orange-600 disabled:opacity-50 whitespace-nowrap"
+            className="bg-orange-500 text-white font-semibold px-5 py-2 rounded-lg hover:bg-orange-600 disabled:opacity-50 whitespace-nowrap text-sm"
           >
             {isProcessing ? 'Processing...' : 'Upgrade Plan'}
           </button>
@@ -79,10 +77,9 @@ const FreePlanView = ({ subscription, handleCreateSession, isProcessing }) => {
         </div>
       </div>
 
-      {/* Usage Meter */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-800">Free Plan - {wordsLimit} Words</h3>
-        <p className="text-sm text-gray-500 mb-4">Your words are limited to {wordsLimit} words per account. Upgrade to a paid plan to unlock more words.</p>
+        <h4 className="font-semibold text-gray-800">Free Plan - {wordsLimit} Words</h4>
+        <p className="text-sm text-gray-500 mb-3">Your words are limited to {wordsLimit} words per account. Upgrade to a paid plan to unlock more words.</p>
         <ProgressBar 
           value={wordsUsed}
           max={wordsLimit}
@@ -94,27 +91,26 @@ const FreePlanView = ({ subscription, handleCreateSession, isProcessing }) => {
 };
 
 const ProPlanView = ({ subscription, handleCreateSession, setShowCancelConfirm, isProcessing }) => {
-  const planName = subscription?.planName || 'Pro Plan';
-  const renewalDate = subscription?.currentPeriodEnd ? new Date(subscription.currentPeriodEnd).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+  const planName = subscription?.planId === 'pro_yearly' ? 'Pro Unlimited Annual Plan' : 'Pro Unlimited Monthly Plan';
+  const renewalDate = subscription?.currentPeriodEnd ? new Date(subscription.currentPeriodEnd).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A';
   const price = subscription?.planId === 'pro_yearly' ? '$152/year' : '$12/month';
 
   return (
-    <div className="space-y-8">
-      {/* Current Subscription Banner */}
+    <div className="space-y-6">
       <div className="border border-gray-200 rounded-lg p-4">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-          <h3 className="font-bold text-gray-800">Your Current Plan</h3>
+          <h4 className="font-semibold text-gray-800">Your Current Plan</h4>
           <button
             onClick={() => setShowCancelConfirm(true)}
             disabled={isProcessing || subscription?.cancelAtPeriodEnd}
-            className="px-3 py-1 text-sm font-semibold text-red-600 bg-transparent border border-red-600 rounded-md hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+            className="px-3 py-1 text-sm font-semibold text-red-600 bg-transparent border border-red-200 rounded-md hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
           >
             {subscription?.cancelAtPeriodEnd ? 'Cancellation Pending' : 'Cancel Subscription'}
           </button>
         </div>
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-2 gap-2">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-3 gap-3">
           <div className="flex items-center gap-3">
-            <FaStar className="text-yellow-500" />
+            <FaStar className="text-yellow-400" size={20} />
             <span className="font-bold text-gray-800">{planName}</span>
             <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-orange-100 text-orange-600">Active plan</span>
           </div>
@@ -127,11 +123,10 @@ const ProPlanView = ({ subscription, handleCreateSession, setShowCancelConfirm, 
         </div>
       </div>
 
-      {/* Upgrade to Annual Banner */}
       {subscription?.planId === 'pro_monthly' && (
         <div className="bg-orange-500 text-white rounded-lg p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h4 className="text-lg font-bold">Upgrade to Annual Plan</h4>
+            <h4 className="text-xl font-bold">Upgrade to Annual Plan</h4>
             <p className="text-sm opacity-90">Save 60% with annual billing</p>
           </div>
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-4 md:mt-0">
@@ -142,7 +137,7 @@ const ProPlanView = ({ subscription, handleCreateSession, setShowCancelConfirm, 
             <button 
               onClick={() => handleCreateSession('pro_yearly')}
               disabled={isProcessing}
-              className="bg-white text-orange-600 font-semibold px-6 py-2 rounded-md hover:bg-orange-100 disabled:opacity-50 whitespace-nowrap"
+              className="bg-white text-orange-600 font-semibold px-6 py-2.5 rounded-lg hover:bg-orange-50 disabled:opacity-50 whitespace-nowrap text-sm"
             >
               {isProcessing ? 'Processing...' : 'Switch To Annual'}
             </button>
@@ -166,15 +161,18 @@ export default function BillingSettings() {
     if (!session) return;
     setIsLoading(true);
     try {
-      const res = await fetch('/api/subscription/status');
-      if (!res.ok) throw new Error('Failed to fetch subscription');
-      const data = await res.json();
-      setSubscription(data.subscription);
-      // Mock billing history for pro user based on screenshot
-      if (data.subscription?.planId !== 'free') {
-        setBillingHistory([
-          { id: 1, invoice: '1', amount: '$12.00', date: '25 June 2025', status: 'PAID' }
-        ]);
+      const [subRes, historyRes] = await Promise.all([
+        fetch('/api/subscription/status'),
+        fetch('/api/subscription/billing-history'),
+      ]);
+
+      if (!subRes.ok) throw new Error('Failed to fetch subscription');
+      const subData = await subRes.json();
+      setSubscription(subData.subscription);
+
+      if (historyRes.ok) {
+        const historyData = await historyRes.json();
+        setBillingHistory(historyData.invoices || []);
       } else {
         setBillingHistory([]);
       }
@@ -190,13 +188,10 @@ export default function BillingSettings() {
   }, [fetchBillingData]);
 
   const handleConfirmCancel = async () => {
-    if (isProcessing) return;
+    if (isProcessing) return; 
     setIsProcessing(true);
     try {
-      const res = await fetch('/api/payments/cancel-subscription', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      });
+      const res = await fetch('/api/payments/cancel-subscription', { method: 'POST' });
       if (!res.ok) throw new Error('Failed to cancel subscription');
       const data = await res.json();
       setSubscription(data.subscription);
@@ -232,40 +227,43 @@ export default function BillingSettings() {
   const isPro = subscription?.planId !== 'free';
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h2 className="text-xl font-bold text-gray-800">Billing Info & Settings</h2>
-        <p className="text-sm text-gray-500">This information is private and only viewable by you.</p>
-      </div>
+    <div className="space-y-8 font-sans">
+      <section>
+        <h2 className="text-xl font-bold text-gray-900">Billing Info & Settings</h2>
+        <p className="text-sm text-gray-500 mt-1">This information is private and only viewable by you.</p>
+      </section>
 
-      <SectionTitle>Current Subscription</SectionTitle>
-      
-      {isPro ? (
-        <ProPlanView 
-          subscription={subscription}
-          handleCreateSession={handleCreateSession}
-          setShowCancelConfirm={setShowCancelConfirm}
-          isProcessing={isProcessing}
-        />
-      ) : (
-        <FreePlanView 
-          subscription={subscription}
-          handleCreateSession={handleCreateSession}
-          isProcessing={isProcessing}
-        />
-      )}
+      <section>
+        <SectionTitle>Current Subscription</SectionTitle>
+        {isPro ? (
+          <ProPlanView 
+            subscription={subscription}
+            handleCreateSession={handleCreateSession}
+            setShowCancelConfirm={setShowCancelConfirm}
+            isProcessing={isProcessing}
+          />
+        ) : (
+          <FreePlanView 
+            subscription={subscription}
+            handleCreateSession={handleCreateSession}
+            isProcessing={isProcessing}
+          />
+        )}
+      </section>
 
-      <SectionTitle>Billing History</SectionTitle>
-      <BillingHistoryTable history={billingHistory} />
+      <section>
+        <SectionTitle>Billing History</SectionTitle>
+        <BillingHistoryTable history={billingHistory} />
+      </section>
 
       {showCancelConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white p-6 sm:p-8 rounded-lg shadow-xl max-w-md w-full">
             <h3 className="text-xl font-bold mb-4">Confirm Cancellation</h3>
-            <p className="mb-6 text-gray-600">Are you sure you want to cancel your subscription? This action will downgrade you to the Free Plan at the end of your current billing period.</p>
+            <p className="mb-6 text-gray-600">Are you sure you want to cancel? This will downgrade you to the Free Plan at the end of your current billing period.</p>
             <div className="flex flex-col-reverse sm:flex-row justify-end gap-3">
-              <button onClick={() => setShowCancelConfirm(false)} disabled={isProcessing} className="w-full sm:w-auto px-6 py-2 border border-gray-300 rounded-md text-gray-700 font-semibold hover:bg-gray-50 disabled:opacity-50">No, Keep It</button>
-              <button onClick={handleConfirmCancel} disabled={isProcessing} className="w-full sm:w-auto px-6 py-2 bg-red-600 text-white font-semibold rounded-md hover:bg-red-700 disabled:opacity-50">
+              <button onClick={() => setShowCancelConfirm(false)} disabled={isProcessing} className="w-full sm:w-auto px-6 py-2 border border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-50 disabled:opacity-50 text-sm">No, Keep It</button>
+              <button onClick={handleConfirmCancel} disabled={isProcessing} className="w-full sm:w-auto px-6 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 disabled:opacity-50 text-sm">
                 {isProcessing ? 'Processing...' : 'Cancel Subscription'}
               </button>
             </div>

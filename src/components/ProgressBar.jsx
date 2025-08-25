@@ -7,13 +7,17 @@ const ProgressBar = ({ value, max, label }) => {
 
   return (
     <div>
-      <div className="w-full bg-gray-200 rounded-full h-2.5">
+      <div className="w-full bg-gray-200 rounded-full h-2">
         <div 
-          className="bg-orange-500 h-2.5 rounded-full transition-all duration-500"
+          className="bg-orange-500 h-2 rounded-full transition-all duration-500"
           style={{ width: `${percentage}%` }}
         />
       </div>
-      {label && <p className="text-sm text-gray-500 mt-2">{label}</p>}
+      {label && (
+        <div className="flex justify-between items-center mt-1.5">
+            <p className="text-sm font-semibold text-gray-600">{label}</p>
+        </div>
+      )}
     </div>
   );
 };

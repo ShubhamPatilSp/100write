@@ -13,24 +13,24 @@ const AccountSettings = () => {
   ];
 
   return (
-    <div className="w-full p-4 md:p-6">
-      <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6 md:mb-8">Account Settings</h1>
-      <div className="bg-white border-2 border-orange-500 rounded-2xl p-4 md:p-6 flex flex-col md:flex-row gap-6">
-        <aside className="w-full md:w-1/4 flex flex-row md:flex-col gap-2 overflow-x-auto pb-2 md:pb-0">
+    <div className="w-full p-4 sm:p-6">
+      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">Profile</h1>
+      <div className="bg-white border border-orange-200 rounded-xl p-4 sm:p-6 flex flex-col lg:flex-row gap-6 lg:gap-8 shadow-sm">
+        <aside className="w-full lg:w-1/4 flex flex-row lg:flex-col gap-2 overflow-x-auto pb-2 lg:pb-0 pr-4 border-r border-gray-100">
           {tabs.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`w-full text-left font-semibold px-4 py-3 rounded-lg transition-colors duration-200 whitespace-nowrap ${ 
+              className={`w-full text-left font-semibold px-4 py-2.5 rounded-lg transition-colors duration-200 whitespace-nowrap text-sm ${ 
                 activeTab === tab.id
                   ? 'bg-orange-100 text-orange-600'
-                  : 'text-gray-600 hover:bg-gray-100'
+                  : 'text-gray-500 hover:text-gray-800'
               }`}>
               {tab.label}
             </button>
           ))}
         </aside>
-        <main className="w-full md:w-3/4 md:pl-6">
+        <main className="w-full lg:w-3/4">
           {activeTab === 'account' && <AccountSecurity />}
           {activeTab === 'billing' && <BillingSettings />}
         </main>
